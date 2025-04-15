@@ -19,7 +19,6 @@ https://www.worldometers.info/gdp/gdp-by-country/
 Enter Country:
 
 - predicted medal count at next Olympic games (summer/winter respectively) + odds(%) of being in top 10% ✅ [function written in work.ipynb]
-- predicted medal count by over-arching event (i.e. track, swimming, ect.)
 - predicted medal count individual versus team?
 - some sort of plot? (history/predictions)
   
