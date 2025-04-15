@@ -10,6 +10,8 @@ Grace Brooks
 
 https://www.kaggle.com/datasets/piterfm/olympic-games-medals-19862018?resource=download&select=olympic_athletes.csv
 
+https://www.worldometers.info/gdp/gdp-by-country/
+
 **Project Description:**
 
 [potential questions/outline]
