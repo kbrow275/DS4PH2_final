@@ -6,7 +6,10 @@ Kate Brown
 
 Grace Brooks
 
-Data: https://www.kaggle.com/datasets/piterfm/olympic-games-medals-19862018?resource=download&select=olympic_athletes.csv
+**Data:**
+
+https://www.kaggle.com/datasets/piterfm/olympic-games-medals-19862018?resource=download&select=olympic_athletes.csv
+
 **Project Description:**
 
 [potential questions/outline]
