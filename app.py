@@ -18,7 +18,7 @@ with tabs[1]:
     st.header("Olympic Medal Prediction by Country and Event")
     st.subheader("Enter the Event and country name:")
     st.text_input("Enter the Event")
-    st.text_imput("Enter Country name")
+    st.text_input("Enter Country name")
 
 
 
