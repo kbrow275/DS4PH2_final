@@ -8,9 +8,9 @@ Grace Brooks
 
 **Data:**
 
-https://www.kaggle.com/datasets/piterfm/olympic-games-medals-19862018?resource=download&select=olympic_athletes.csv
+Olympic Results Data: https://www.kaggle.com/datasets/piterfm/olympic-games-medals-19862018?resource=download&select=olympic_athletes.csv
 
-https://www.worldometers.info/gdp/gdp-by-country/
+Other Country Feature Data: https://www.worldometers.info/gdp/gdp-by-country/
 
 **Project Description:**
 
