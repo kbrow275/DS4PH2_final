@@ -18,7 +18,7 @@ if selected_country:
     try:
         predictions = predict_olympic_medals_detailed(selected_country)
 
-        st.subheader(f"Predicted Medals for {predictions['country']}")
+        st.subheader(f"Predicted Medals for {predictions['country']} in next Olympics")
         st.markdown("### Summer Olympics")
         st.write(f"🥇 Individual Medals: {predictions['summer']['individual_medals']}")
         st.write(f"🥈 Doubles Medals: {predictions['summer']['doubles_medals']}")
