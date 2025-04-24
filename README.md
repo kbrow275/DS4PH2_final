@@ -14,7 +14,7 @@ Other Country Feature Data: https://www.worldometers.info/gdp/gdp-by-country/
 
 **Project Description:**
 
-We decided to explore the prediction of future Olympic medal outcomes. Initially, we planned to use only historical Olympic results as predictors. However, we later incorporated broader country-level information—such as population, GDP, and GDP per capita—based on the rationale that these factors might influence a country's likelihood of winning medals. 
+We decided to explore the prediction of future Olympic medal outcomes. Initially, we planned to use only historical Olympic results as predictors. However, we later incorporated broader country-level information—such as population, GDP, and GDP per capita—based on the rationale that these factors might influence a country's likelihood of winning medals. The prediction functions we wrote utilized both linear and logistic regression. Additionally, we utilized interactive graphics that we learned in DS4PH last term. 
 
 Our final Streamlit app includes three interactive tabs:
 
