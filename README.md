@@ -24,7 +24,7 @@ Enter Country:
   
 Enter Event:
 
-- predicted podium?
+- predicted podium -> rought code in work.ipynb (did not wanna mess up prediction.py if it didn't work) ✅ [function inputs discipline, event title, and season (drop downs?)]
   
 Other Possibilities:
 
