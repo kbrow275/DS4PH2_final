@@ -20,7 +20,7 @@ tab1, tab2, tab3 = st.tabs(["Overall Prediction", "Event Podium Prediction", "Co
 with tab1:
     country_list = df["country_name"].unique().tolist()
     st.title("Detailed Medal Breakdown") 
-    st.write("See predicted counts of individual, doubles, and team medals by Olympic season.")
+    st.write("See predicted counts of individual, doubles, and team medals for the next Olympic games.")
     selected_country = st.selectbox("Select a country:", country_list, key = "detailed_country")
 
     if selected_country:
@@ -47,7 +47,7 @@ with tab1:
        
 with tab2:
     st.title("Podium Prediction by Event")
-    st.write("Select a sport discipline and event to see the predicted podium finish.")
+    st.write("Select a sport discipline and event to see the predicted podium finish for next olympics.")
 
     all_disciplines = sorted(results['discipline_title'].dropna().unique())
     discipline = st.selectbox("Select a discipline:", all_disciplines)
