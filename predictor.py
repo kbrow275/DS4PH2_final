@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
 
-
 data = pd.read_csv("olympic_results.csv")
 data_clean = data.drop(columns = ['participant_type', 'athletes', 'rank_equal', 'country_code', 'athlete_url', 'athlete_full_name', 'value_unit', 'value_type'])
 # split 'slug_game' into 'city' and 'year'
@@ -104,8 +103,6 @@ features_df['avg_summer_team_medals_per_year']       = features_df['summer_team_
 features_df['avg_winter_individual_medals_per_year'] = features_df['winter_individual_medals'] / 23
 features_df['avg_winter_doubles_medals_per_year']    = features_df['winter_doubles_medals'] / 23
 features_df['avg_winter_team_medals_per_year']       = features_df['winter_team_medals'] / 23
-
-
 
 # fill missing values (using median)
 imputer = SimpleImputer(strategy='median')
@@ -207,9 +204,7 @@ def predict_olympic_medals(country_name):
         'winter_top10_prob': f"{winter_prob:.1%}"
     }
 
-
-
-#predict the number of individual/team/doubles medals for the next Olympics
+# predict the number of individual/team/doubles medals for the next Olympics
 # prepare feature matrix
 X = features_df[[
     'gdp', 'population', 'gdp_per_capita',
@@ -227,8 +222,7 @@ for season in ['summer', 'winter']:
             ('regressor', LinearRegression())
         ])
         models[model_name].fit(X, features_df[target])
-
-
+# prediction function (medal counts only)
 def predict_olympic_medals_detailed(country_name):
     if country_name not in features_df['country_name'].values:
         raise ValueError(f"Country '{country_name}' not found in dataset.")
