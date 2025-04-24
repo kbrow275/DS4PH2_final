@@ -255,3 +255,188 @@ def predict_olympic_medals_detailed(country_name):
         results[season]['total_medals'] = season_total
 
     return results
+
+# podium prediction by event
+def predict_event_podium(discipline, event_title, season=None, top_n=3):
+
+    # determine season if not provided
+    if season is None:
+        winter_disciplines = [
+            'Alpine Skiing', 'Biathlon', 'Bobsleigh', 'Cross-Country Skiing', 
+            'Curling', 'Figure Skating', 'Freestyle Skiing', 'Ice Hockey', 
+            'Luge', 'Nordic Combined', 'Short Track Speed Skating', 
+            'Skeleton', 'Ski Jumping', 'Snowboard', 'Speed Skating'
+        ]
+        season = 'winter' if discipline in winter_disciplines else 'summer'
+    
+    # filter data for the chosen event
+    event_data = data_clean[
+        (data_clean['discipline_title'].str.lower() == discipline.lower()) &
+        (data_clean['event_title'].str.lower().str.contains(event_title.lower())) & 
+        (data_clean['season'] == season)
+    ].copy()
+    
+    if event_data.empty:
+        raise ValueError(f"No historical data found for {discipline} - {event_title} in {season} Olympics")
+    
+    # prep features and targets
+    features = []
+    targets = []
+    country_stats = []
+    
+    # obtain participating countries
+    participating_countries = event_data['country_name'].unique()
+    
+    for country in participating_countries:
+        country_data = event_data[event_data['country_name'] == country]
+        
+        # features
+        total_appearances = len(country_data)
+        gold_count = len(country_data[country_data['medal_type'].str.lower() == 'gold'])
+        silver_count = len(country_data[country_data['medal_type'].str.lower() == 'silver'])
+        bronze_count = len(country_data[country_data['medal_type'].str.lower() == 'bronze'])
+        medal_rate = (gold_count + silver_count + bronze_count) / total_appearances if total_appearances > 0 else 0
+        
+        # get country's features from features_df
+        country_features = features_df[features_df['country_name'] == country]
+        if not country_features.empty:
+            gdp = country_features['gdp'].values[0]
+            population = country_features['population'].values[0]
+            gdp_per_capita = country_features['gdp_per_capita'].values[0]
+            total_medals = country_features['total_medals'].values[0]
+        else:
+            # defaults for missing data
+            gdp = features_df['gdp'].median()
+            population = features_df['population'].median()
+            gdp_per_capita = features_df['gdp_per_capita'].median()
+            total_medals = 0
+        
+        features.append([
+            total_appearances,
+            gold_count,
+            silver_count,
+            bronze_count,
+            medal_rate,
+            gdp,
+            population,
+            gdp_per_capita,
+            total_medals
+        ])
+        
+        # create target for regression (weighted medal score)
+        targets.append(gold_count*3 + silver_count*2 + bronze_count*1)
+        
+        country_stats.append({
+            'country': country,
+            'appearances': total_appearances,
+            'golds': gold_count,
+            'silvers': silver_count,
+            'bronzes': bronze_count,
+            'medal_score': gold_count*3 + silver_count*2 + bronze_count*1
+        })
+    
+    # Fallback to simple historical counts if insufficient data
+    if len(features) < 3:
+        print("Warning: Insufficient data for ML models - falling back to historical medal counts")
+        return create_podium_from_history(country_stats, discipline, event_title, season, top_n)
+    
+    # convert to numpy arrays
+    X = np.array(features)
+    y_reg = np.array(targets)
+    
+    # normalize targets for classification
+    try:
+        # try to create classes - at least 25% must have medals to attempt classification
+        if sum(y_reg > 0) >= max(3, len(y_reg)*0.25):
+            y_class = (y_reg >= np.percentile(y_reg[y_reg > 0], 25)).astype(int) 
+            can_use_classifier = len(np.unique(y_class)) > 1
+        else:
+            can_use_classifier = False
+    except:
+        can_use_classifier = False
+    
+    # train regression model
+    reg_model = make_pipeline(StandardScaler(), LinearRegression())
+    reg_model.fit(X, y_reg)
+    
+    # train classifier [if we have multiple classes]
+    if can_use_classifier:
+        class_model = make_pipeline(StandardScaler(), LogisticRegression())
+        class_model.fit(X, y_class)
+    
+    # predict for all countries
+    predictions = []
+    for i, country in enumerate(participating_countries):
+        x = X[i].reshape(1, -1)
+        
+        # regression prediction (medal score)
+        medal_score = max(0, reg_model.predict(x)[0])
+        
+        # classification prediction if available, otherwise use normalized medal score
+        if can_use_classifier:
+            podium_prob = class_model.predict_proba(x)[0][1]
+        else:
+            # fallback: use softmax of medal scores
+            podium_prob = np.exp(medal_score) / np.sum(np.exp([s['medal_score'] for s in country_stats]))
+        
+        predictions.append({
+            'country': country,
+            'medal_score': medal_score,
+            'podium_probability': podium_prob,
+            **country_stats[i]
+        })
+    
+    # sort by medal score and get top_n countries
+    predictions.sort(key=lambda x: x['medal_score'], reverse=True)
+    top_predictions = predictions[:top_n]
+    
+    # normalize probabilities to sum to 1 among top_n
+    total_prob = sum(p['podium_probability'] for p in top_predictions)
+    if total_prob > 0:
+        for pred in top_predictions:
+            pred['podium_probability'] /= total_prob
+    
+    return create_podium_structure(top_predictions, discipline, event_title, season, top_n, can_use_classifier)
+
+def create_podium_from_history(country_stats, discipline, event_title, season, top_n):
+    """Fallback function when ML models can't be used"""
+    # sort by historical medal score
+    country_stats.sort(key=lambda x: x['medal_score'], reverse=True)
+    top_countries = country_stats[:top_n]
+    
+    # create probabilities based on historical medal share
+    total_score = sum(c['medal_score'] for c in top_countries)
+    if total_score == 0:
+        # equal probability if no medals won
+        for c in top_countries:
+            c['podium_probability'] = 1.0 / len(top_countries)
+    else:
+        for c in top_countries:
+            c['podium_probability'] = c['medal_score'] / total_score
+    
+    return create_podium_structure(top_countries, discipline, event_title, season, top_n, False)
+
+def create_podium_structure(predictions, discipline, event_title, season, top_n, used_ml):
+    """Creates the final output structure"""
+    podium = {}
+    medals = ['gold', 'silver', 'bronze'][:top_n]
+    
+    for i, pred in enumerate(predictions[:top_n]):
+        medal = medals[i] if i < len(medals) else f'position_{i+1}'
+        
+        podium[medal] = {
+            'country': pred['country'],
+            'probability': f"{pred['podium_probability']:.1%}",
+            'medal_score': pred['medal_score'],
+            'historical_golds': pred['golds'],
+            'historical_silvers': pred['silvers'],
+            'historical_bronzes': pred['bronzes'],
+            'total_appearances': pred['appearances']
+        }
+    
+    return {
+        'discipline': discipline,
+        'event': event_title,
+        'season': season,
+        'podium': podium,
+        }
