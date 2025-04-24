@@ -8,7 +8,7 @@ from predictor import predict_olympic_medals, predict_olympic_medals_detailed
 df = pd.read_csv("features.csv")
 country_list = df["country_name"].unique().tolist()
 
-tab1, tab2 = st.tabs(["Overall Prediction", "Detailed Medal Breakdown"])
+tab1, tab2, tab3 = st.tabs(["Overall Prediction", "Detailed Medal Breakdown", "Event Podium Prediction"])
 
 with tab1:
     st.title("Olympic Medal Prediction") 
@@ -57,4 +57,26 @@ with tab2:
             st.error(str(e))
             
        
+with tab3:
+    st.title("Podium Prediction by Event")
+    st.write("Select a sport discipline and event to see the predicted podium finish.")
 
+    all_disciplines = sorted(df['discipline_title'].dropna().unique())
+    discipline = st.selectbox("Select a discipline:", all_disciplines)
+
+    if discipline:
+        event_subset = df[df['discipline_title'] == discipline]['event_title'].dropna().unique()
+        event_title = st.selectbox("Select an event:", sorted(event_subset))
+
+        if event_title:
+            try:
+                podium = predict_event_podium(discipline, event_title)
+                st.subheader(f"Predicted Podium for {discipline} - {event_title}")
+                for medal, info in podium['podium'].items():
+                    st.markdown(f"**{medal.capitalize()}**: {info['country']}  ")
+                    st.write(f"- Probability: {info['probability']}")
+                    st.write(f"- Historical Medals: {info['historical_golds']} Gold, {info['historical_silvers']} Silver, {info['historical_bronzes']} Bronze")
+                    st.write(f"- Total Appearances: {info['total_appearances']}")
+
+            except ValueError as e:
+                st.error(str(e))
