@@ -4,32 +4,20 @@ from streamlit_folium import st_folium
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from predictor import predict_olympic_medals, predict_olympic_medals_detailed
+
+from predictor import predict_olympic_medals, predict_olympic_medals_detailed, predict_event_podium
 df = pd.read_csv("features.csv")
+year_data = pd.read_csv("data_clean.csv")
+results = pd.read_csv("olympic_results.csv")
 country_list = df["country_name"].unique().tolist()
 
-tab1, tab2, tab3 = st.tabs(["Overall Prediction", "Detailed Medal Breakdown", "Event Podium Prediction"])
+st.title("Olympic Medal Prediction App 🏅")
+
+tab1, tab2, tab3 = st.tabs(["Overall Prediction", "Event Podium Prediction", "Country Medal History"])
+
+
 
 with tab1:
-    st.title("Olympic Medal Prediction") 
-    st.write("This app predicts the number of medals a country will win in the next Olympics based on historical data.")
-    selected_country = st.selectbox("Select a country:", country_list, key = "overall_country")
-
-    if selected_country:
-        try:
-            predictions = predict_olympic_medals(selected_country)
-
-            st.subheader(f"Predicted Medals for {predictions['country']} in the Next Olympics")
-            st.write(f"🌊 **Summer Olympic Medals:** {predictions['next_summer_medals_pred']}")
-            st.write(f"❄️ **Winter Olympic Medals:** {predictions['next_winter_medals_pred']}")
-            st.write(f"**Probability of being in Top 10 (Summer):** {predictions['summer_top10_prob']}")
-            st.write(f"**Probability of being in Top 10 (Winter):** {predictions['winter_top10_prob']}")
-
-        except ValueError as e:
-            st.error(str(e))
-
-
-with tab2:
     country_list = df["country_name"].unique().tolist()
     st.title("Detailed Medal Breakdown") 
     st.write("See predicted counts of individual, doubles, and team medals by Olympic season.")
@@ -57,15 +45,15 @@ with tab2:
             st.error(str(e))
             
        
-with tab3:
+with tab2:
     st.title("Podium Prediction by Event")
     st.write("Select a sport discipline and event to see the predicted podium finish.")
 
-    all_disciplines = sorted(df['discipline_title'].dropna().unique())
+    all_disciplines = sorted(results['discipline_title'].dropna().unique())
     discipline = st.selectbox("Select a discipline:", all_disciplines)
 
     if discipline:
-        event_subset = df[df['discipline_title'] == discipline]['event_title'].dropna().unique()
+        event_subset = results[results['discipline_title'] == discipline]['event_title'].dropna().unique()
         event_title = st.selectbox("Select an event:", sorted(event_subset))
 
         if event_title:
@@ -80,3 +68,10 @@ with tab3:
 
             except ValueError as e:
                 st.error(str(e))
+
+with tab3:
+    st.title("Country Medal History")
+    st.write("Select a country to see its historical medal counts in the Summer and Winter Olympics.")
+    selected_country = st.selectbox("Select a country:", country_list, key = "country_history")
+
+    
