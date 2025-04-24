@@ -14,18 +14,14 @@ Other Country Feature Data: https://www.worldometers.info/gdp/gdp-by-country/
 
 **Project Description:**
 
-[potential questions/outline]
+We decided to explore the prediction of future Olympic medal outcomes. Initially, we planned to use only historical Olympic results as predictors. However, we later incorporated broader country-level information—such as population, GDP, and GDP per capita—based on the rationale that these factors might influence a country's likelihood of winning medals. 
 
-Enter Country:
+Our final Streamlit app includes three interactive tabs:
 
-- predicted medal count at next Olympic games (summer/winter respectively) + odds(%) of being in top 10% ✅ [function written in work.ipynb]
-- predicted medal count individual/doubles/team by summer/winter ✅ [function written in work.ipynb]
-- some sort of plot? (history/predictions)
-  
-Enter Event:
+1. Country-based Predictions: This tab allows users to input a country and receive predictions for the number of individual, doubles, and team medals expected at the next Summer and Winter Olympic Games, respectively.
 
-- predicted podium -> rought code in work.ipynb (did not wanna mess up prediction.py if it didn't work) ✅ [function inputs discipline, event title, and season (drop downs?)]
-  
-Other Possibilities:
+2. Podium Predictor: In this tab, users can input a discipline and event name to view the predicted podium (top three countries) for the next games.
 
-- do people perform better at home olympics?
+3. Historic Medal Explorer: This interactive bar plot visualizes the most recent Olympic results. After a country is selected, the chart displays the total medals won, with breakdowns by discipline shown through interactive bars.
+
+**App Link:**
