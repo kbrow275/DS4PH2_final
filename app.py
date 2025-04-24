@@ -20,7 +20,7 @@ with tab1:
             predictions = predict_olympic_medals(selected_country)
 
             st.subheader(f"Predicted Medals for {predictions['country']} in the Next Olympics")
-            st.write(f"🏅 **Summer Olympic Medals:** {predictions['next_summer_medals_pred']}")
+            st.write(f"🌊 **Summer Olympic Medals:** {predictions['next_summer_medals_pred']}")
             st.write(f"❄️ **Winter Olympic Medals:** {predictions['next_winter_medals_pred']}")
             st.write(f"**Probability of being in Top 10 (Summer):** {predictions['summer_top10_prob']}")
             st.write(f"**Probability of being in Top 10 (Winter):** {predictions['winter_top10_prob']}")
@@ -42,15 +42,15 @@ with tab2:
             st.subheader(f"Detailed Medal Breakdown for {predictions['country']}")
 
             st.markdown("### Summer Olympics")
-            st.write(f"🥇 **Individual Medals:** {predictions['summer']['individual_medals']}")
-            st.write(f"🥈 **Doubles Medals:** {predictions['summer']['doubles_medals']}")
-            st.write(f"🥉 **Team Medals:** {predictions['summer']['team_medals']}")
+            st.write(f"🏄 **Individual Medals:** {predictions['summer']['individual_medals']}")
+            st.write(f"🧑‍🤝‍🧑 **Doubles Medals:** {predictions['summer']['doubles_medals']}")
+            st.write(f"🏅 **Team Medals:** {predictions['summer']['team_medals']}")
             st.write(f"🏆 **Total Summer Medals:** {predictions['summer']['total_medals']}")
 
             st.markdown("### Winter Olympics")
-            st.write(f"❄️ **Individual Medals:** {predictions['winter']['individual_medals']}")
-            st.write(f"⛷️ **Doubles Medals:** {predictions['winter']['doubles_medals']}")
-            st.write(f"🏒 **Team Medals:** {predictions['winter']['team_medals']}")
+            st.write(f"🏂 **Individual Medals:** {predictions['winter']['individual_medals']}")
+            st.write(f"🧑‍🤝‍🧑 **Doubles Medals:** {predictions['winter']['doubles_medals']}")
+            st.write(f"🏅 **Team Medals:** {predictions['winter']['team_medals']}")
             st.write(f"🏆 **Total Winter Medals:** {predictions['winter']['total_medals']}")
 
         except ValueError as e:
