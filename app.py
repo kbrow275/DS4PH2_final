@@ -76,24 +76,24 @@ with tab2:
 with tab3:
     st.title("Country Medal History")
     st.write("Select a country to see its historical medal counts in the Summer and Winter Olympics.")
+    
     selected_country = st.selectbox("Select a country:", country_list, key="country_history")
-    
-    country_data = year_data[year_data['country_name'] == selected_country]
-    
-    country_data['medal_awarded'] = country_data['medal_type'].notna().astype(int)
 
-    medal_counts = country_data[country_data['medal_type'].notna()] \
-        .groupby(['country_name', 'year'])['medal_type'] \
-        .count().reset_index().rename(columns={'medal_type': 'total_medals'})
-
-    if 'total_medals' in country_data.columns:
-        country_data = country_data.drop(columns='total_medals')
-
-    country_data = country_data.merge(medal_counts, on=['country_name', 'year'], how='left')
+    # Filter data for the selected country
+    country_data = year_data[year_data['country_name'] == selected_country].copy()
     
-    fig = px.bar(country_data, x='year', y='total_medals',
+    # Only keep rows with a medal
+    medal_data = country_data[country_data['medal_type'].notna()].copy()
+
+    # Count medals by year and discipline
+    medal_counts = medal_data.groupby(['year', 'discipline_title']) \
+        .size().reset_index(name='total_medals')
+
+    # Plot
+    fig = px.bar(medal_counts, x='year', y='total_medals',
                  color='discipline_title',
                  title=f'Olympic Medals by Discipline - {selected_country}',
                  barmode='stack')
-    
+
     st.plotly_chart(fig)
+
