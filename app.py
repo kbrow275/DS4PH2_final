@@ -90,7 +90,7 @@ with tab3:
         country_data = country_data.drop(columns='total_medals')
 
     country_data = country_data.merge(medal_counts, on=['country_name', 'year'], how='left')
-
+    
     fig = px.bar(country_data, x='year', y='total_medals',
                  color='discipline_title',
                  title=f'Olympic Medals by Discipline - {selected_country}',

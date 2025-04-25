@@ -441,3 +441,15 @@ def create_podium_structure(predictions, discipline, event_title, season, top_n,
         'season': season,
         'podium': podium,
         }
+
+data_clean['medal_awarded'] = data_clean['medal_type'].notna().astype(int)
+
+medal_counts = data_clean[data_clean['medal_type'].notna()] \
+    .groupby(['country_name', 'year'])['medal_type'] \
+    .count().reset_index().rename(columns={'medal_type': 'total_medals'})
+
+if 'total_medals' in data_clean.columns:
+    data_clean = data_clean.drop(columns='total_medals')
+
+data_clean = data_clean.merge(medal_counts, on=['country_name', 'year'], how='left')
+
