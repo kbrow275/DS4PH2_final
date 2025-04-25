@@ -3,6 +3,8 @@ import folium
 from streamlit_folium import st_folium  
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.io as pio
 
 
 from predictor import predict_olympic_medals, predict_olympic_medals_detailed, predict_event_podium
@@ -10,6 +12,8 @@ df = pd.read_csv("features.csv")
 year_data = pd.read_csv("data_clean.csv")
 results = pd.read_csv("olympic_results.csv")
 country_list = df["country_name"].unique().tolist()
+
+st.set_page_config(page_title="Olympic Medal Prediction App", page_icon="🏅")
 
 st.title("Olympic Medal Prediction App 🏅")
 
@@ -72,6 +76,24 @@ with tab2:
 with tab3:
     st.title("Country Medal History")
     st.write("Select a country to see its historical medal counts in the Summer and Winter Olympics.")
-    selected_country = st.selectbox("Select a country:", country_list, key = "country_history")
-
+    selected_country = st.selectbox("Select a country:", country_list, key="country_history")
     
+    country_data = year_data[year_data['country_name'] == selected_country]
+    
+    country_data['medal_awarded'] = country_data['medal_type'].notna().astype(int)
+
+    medal_counts = country_data[country_data['medal_type'].notna()] \
+        .groupby(['country_name', 'year'])['medal_type'] \
+        .count().reset_index().rename(columns={'medal_type': 'total_medals'})
+
+    if 'total_medals' in country_data.columns:
+        country_data = country_data.drop(columns='total_medals')
+
+    country_data = country_data.merge(medal_counts, on=['country_name', 'year'], how='left')
+
+    fig = px.bar(country_data, x='year', y='total_medals',
+                 color='discipline_title',
+                 title=f'Olympic Medals by Discipline - {selected_country}',
+                 barmode='stack')
+    
+    st.plotly_chart(fig)
