@@ -25,3 +25,4 @@ Our final Streamlit app includes three interactive tabs:
 3. Historic Medal Explorer: This interactive bar plot visualizes the most recent Olympic results. After a country is selected, the chart displays the total medals won, with breakdowns by discipline shown through interactive bars.
 
 **App Link:**
+https://kbrow275-ds4ph2-final-app-0rt8pc.streamlit.app/
