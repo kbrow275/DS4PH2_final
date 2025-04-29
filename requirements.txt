@@ -6,3 +6,6 @@ matplotlib
 plotly
 pycountry
 scikit-learn
+beautifulsoup4
+
+
