@@ -7,5 +7,5 @@ plotly
 pycountry
 scikit-learn
 beautifulsoup4
-
+lxml
 
